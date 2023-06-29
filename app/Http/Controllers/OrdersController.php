@@ -79,8 +79,9 @@ class OrdersController extends Controller
                 $order->payment_method,
                 $order->payment_status,
                 $order->status,
-                ''
-                // '<a href="'.route('admin.orders.show', $order->id).'">'.$order->user->name.'</a>',
+                '<button '.($order->status == 'cancelled' || $order->status == 'approved' ? 'disabled' :'').' class="btn btn-success approve-btn ms-2 mt-2" data-id="'.$order->id.'">Approve</button>
+                <button '.($order->status == 'cancelled' ? 'disabled' : '').' class="btn btn-danger cancel-btn ms-2 mt-2" data-id="'.$order->id.'">Cancel</button>
+                ',
             ];
         }
         $output = [
@@ -119,10 +120,23 @@ class OrdersController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Cancel the specified resource from storage.
      */
-    public function destroy(Order $order)
+    public function cancel(Order $order)
     {
-        //
+        $order->update([
+            'status' => 'cancelled'
+        ]);
+        return response()->json([
+            'message' => 'Order cancelled successfully'
+        ]);
+    }
+    public function approve(Order $order){
+        $order->update([
+            'status' => 'approved'
+        ]);
+        return response()->json([
+            'message' => 'Order approved successfully'
+        ]);
     }
 }
